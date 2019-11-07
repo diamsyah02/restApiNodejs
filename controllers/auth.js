@@ -3,6 +3,7 @@ const md5 = require('md5');
 const model = require('../models/auth');
 var jwt = require('jsonwebtoken');
 const config = require('../config/config');
+var bcrypt = require('bcrypt');
 
 exports.login = function(req, res){
     let email = req.body.email;
@@ -11,7 +12,8 @@ exports.login = function(req, res){
         if(err){
             res.status(400).send({error: true, message: 'Your login unsuccessfully !'});
         }else{
-            if(password == results[0].password){
+            let cek = bcrypt.compareSync(password, results[0].password);
+            if(cek){
                 let token = jwt.sign({email: email}, config.secret);
                 res.status(200).send({error: false, data: results, token: token, message: 'Your login successfully !'});
             }else{

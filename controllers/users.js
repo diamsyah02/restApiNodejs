@@ -1,6 +1,8 @@
 'user strict';
 const md5 = require('md5');
 const model = require('../models/users');
+var bcrypt = require('bcrypt');
+var salt = bcrypt.genSaltSync(10);
 
 exports.getAll = function (req, res) {
     model.getUser(function (err, results) {
@@ -26,8 +28,8 @@ exports.addUser = function (req, res) {
     let data = {
         email: req.body.email,
         username: req.body.username,
-        password: md5(req.body.password)
-    }
+        password: bcrypt.hashSync(md5(req.body.password), salt)
+    };
     if (!data.email || !data.username || !data.password) {
         res.status(400).send({ error: true, message: 'email/username/password empty' })
     } else {

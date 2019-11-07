@@ -6,7 +6,7 @@ module.exports = function (app) {
     let multer = require('../config/multer');
 
     // upload
-    app.route('/upload').post(multer.upload.single('file'), function (req, res, next) {
+    app.route('/upload').post(middleware.checkToken, multer.upload.single('file'), function (req, res, next) {
         if (!req.file) {
             res.status(500).send({ error: true, message: 'Upload unsuccessfully !' });
             return next(err);
@@ -18,7 +18,7 @@ module.exports = function (app) {
     // route user
     app.route('/users')
         .get(middleware.checkToken, users.getAll)
-        .post(middleware.checkToken, users.addUser);
+        .post(users.addUser);
 
     app.route('/users/:id')
         .get(middleware.checkToken, users.getById)
